@@ -117,5 +117,34 @@ class TestFileStorage(unittest.TestCase):
         # Check if the reloaded storage contains an object with the correct class
         reloaded_objects = new_storage.all()
         self.assertIsInstance(list(reloaded_objects.values())[0], BaseModel)
+    
+    def test_reload_method_ignores_nonexistent_file(self):
+    # Check if calling reload method with a nonexistent file does not raise an error
+        non_existent_file_path = "non_existent_file.json"
+        self.storage._FileStorage__file_path = non_existent_file_path
+        self.storage.reload()  # Should not raise an error
+    
+    def test_save_and_reload_methods(self):
+        my_model = BaseModel()
+        my_model.name = "Test_Model"
+        self.storage.new(my_model)
+        self.storage.save()
+
+        # Create a new FileStorage instance to simulate a program restart
+        new_storage = FileStorage()
+        new_storage.reload()
+
+        # Check if the reloaded storage contains an object with the same attributes
+        reloaded_objects = new_storage.all()
+        self.assertTrue(any(obj.__dict__ == my_model.__dict__ for obj in reloaded_objects.values()))
+
+    def test_save_method_creates_file(self):
+        self.storage.save()
+        self.assertTrue(os.path.exists(self.file_path))
+
+    def test_file_deletion_on_initialization(self):
+        # Ensure the test file does not exist initially
+        self.assertFalse(os.path.exists(self.file_path))
+
 if __name__ == '__main__':
     unittest.main()
