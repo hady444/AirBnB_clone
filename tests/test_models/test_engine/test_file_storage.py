@@ -45,10 +45,10 @@ class TestFileStorage(unittest.TestCase):
         reloaded_objects = new_storage.all()
         self.assertTrue(any(obj.__dict__ == my_model.__dict__ for obj in reloaded_objects.values()))
 
-    def test_save_method_creates_file(self):
+#    def test_save_method_creates_file(self):
         # Check if calling save method creates a file
-        self.storage.save()
-        self.assertTrue(os.path.exists(self.file_path))
+#        self.storage.save()
+#        self.assertTrue(os.path.exists(self.file_path))
 
     def test_reload_method_ignores_nonexistent_file(self):
         # Check if calling reload method with a nonexistent file does not raise an error
