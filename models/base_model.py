@@ -9,14 +9,14 @@ class BaseModel:
     """
     def __init__(self):
         self.id = str(uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        self.created_at = datetime.utcnow()
+        self.updated_at = datetime.utcnow()
 
     def __str__(self):
         return ("[{}], ({}) {}".format(self.__class__.__name__, self.id, self.__dict__))
 
     def save(self):
-        self.updated_at = datetime.now()
+        self.updated_at = datetime.utcnow()
 
     def to_dict(self):
         dic = dict()
