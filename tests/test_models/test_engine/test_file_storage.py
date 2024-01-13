@@ -69,5 +69,21 @@ class TestFileStorage(unittest.TestCase):
         reloaded_objects = new_empty_storage.all()
         self.assertEqual(len(reloaded_objects), 0)
 
+    def test_save_method_updates_existing_file(self):
+        # Check if calling save method updates an existing file
+        self.storage.save()
+
+        # Modify the storage and save again
+        my_model = BaseModel()
+        self.storage.new(my_model)
+        self.storage.save()
+
+        # Create a new FileStorage instance to simulate a program restart
+        new_storage = FileStorage()
+        new_storage.reload()
+
+        # Ensure that the reloaded storage contains the modified data
+        reloaded_objects = new_storage.all()
+        self.assertIn(my_model, reloaded_objects.values())
 if __name__ == '__main__':
     unittest.main()
