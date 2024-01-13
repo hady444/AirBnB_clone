@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """FileStorage module"""
 import json
+from models.base_model import BaseModel
 
 class FileStorage:
     """
@@ -13,20 +14,22 @@ class FileStorage:
         return self.__objects
 
     def new(self, obj):
-        self.__objects = obj.id
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
+        self.__objects[key] = obj
 
     def save(self):
         serialized_object = {}
-        for key, value in self.__dict__:
+        for key, value in self.__objects.items():
             serialized_object[key] = value.to_dict()
-        with open(self.__file_path, 'w', encoding='usf-8') as my_file:
+        with open(self.__file_path, 'w', encoding='utf-8') as my_file:
             json.dump(serialized_object, my_file)
 
     def reload(self):
         try:
-            with open(self.__file_path, '', encoding='usf-8') as my_file:
-            self.__objects = json.load(my_file)
-            for key, obj_dict in loaded_objects.items():
+            with open(self.__file_path, 'r', encoding='utf-8') as my_file:
+                loaded_objects = json.load(my_file)
+                self.__objects = {}
+                for key, obj_dict in loaded_objects.items():
                     class_name, obj_id = key.split('.')
                     obj_dict['__class__'] = class_name
                     obj = eval(class_name)(**obj_dict)
