@@ -37,5 +37,16 @@ class TestBaseModel(unittest.TestCase):
             else:
                 self.assertEqual(my_model_json[key], value)
 
+    def test_json_to_model(self):
+        my_model_json = self.my_model.to_dict()
+        new_model = BaseModel(**my_model_json)
+        self.assertEqual(new_model.name, self.my_model.name)
+        self.assertEqual(new_model.id, self.my_model.id)
+        self.assertEqual(new_model.created_at, self.my_model.created_at)
+        self.assertEqual(new_model.updated_at, self.my_model.updated_at)
+        self.assertEqual(new_model.my_number, self.my_model.my_number)
+        self.assertIsInstance(new_model.created_at, datetime)
+        self.assertIsInstance(new_model.updated_at, datetime)
+
     if __name__ == '__main__':
         unittest.main()
