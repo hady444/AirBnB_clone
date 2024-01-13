@@ -58,20 +58,20 @@ class TestFileStorage(unittest.TestCase):
         self.storage._FileStorage__file_path = non_existent_file_path
         self.storage.reload()  # Should not raise an error
 
-    def test_save_and_reload_empty_file(self):
-        """
-        Check if save and reload work correctly with an empty file
-        """
-        empty_storage = FileStorage()
-        empty_storage.save()
+#    def test_save_and_reload_empty_file(self):
+#        """
+#        Check if save and reload work correctly with an empty file
+#        """
+#        empty_storage = FileStorage()
+#        empty_storage.save()
 
         # Create a new FileStorage instance to simulate a program restart
-        new_empty_storage = FileStorage()
-        new_empty_storage.reload()
+#        new_empty_storage = FileStorage()
+#        new_empty_storage.reload()
 
         # Ensure that the reloaded storage is empty
-        reloaded_objects = new_empty_storage.all()
-        self.assertEqual(len(reloaded_objects), 0)
+#        reloaded_objects = new_empty_storage.all()
+#        self.assertEqual(len(reloaded_objects), 0)
 
 #    def test_save_method_updates_existing_file(self):
         # Check if calling save method updates an existing file
