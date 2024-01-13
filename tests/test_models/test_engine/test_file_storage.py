@@ -50,11 +50,24 @@ class TestFileStorage(unittest.TestCase):
         self.storage.save()
         self.assertTrue(os.path.exists(self.file_path))
 
-#    def test_reload_method_ignores_nonexistent_file(self):
+    def test_reload_method_ignores_nonexistent_file(self):
         # Check if calling reload method with a nonexistent file does not raise an error
-#        non_existent_file_path = "non_existent_file.json"
-#        self.storage._FileStorage__file_path = non_existent_file_path
-#        self.storage.reload()  # Should not raise an error
+        non_existent_file_path = "non_existent_file.json"
+        self.storage._FileStorage__file_path = non_existent_file_path
+        self.storage.reload()  # Should not raise an error
+
+    def test_save_and_reload_empty_file(self):
+        # Check if save and reload work correctly with an empty file
+        empty_storage = FileStorage()
+        empty_storage.save()
+
+        # Create a new FileStorage instance to simulate a program restart
+        new_empty_storage = FileStorage()
+        new_empty_storage.reload()
+
+        # Ensure that the reloaded storage is empty
+        reloaded_objects = new_empty_storage.all()
+        self.assertEqual(len(reloaded_objects), 0)
 
 if __name__ == '__main__':
     unittest.main()
