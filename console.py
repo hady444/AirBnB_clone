@@ -5,9 +5,7 @@ import cmd, sys
 
 class HBNBCommand(cmd.Cmd):
     """HBNBCommand class"""
-    intro = None
     prompt = "(hbnb) "
-    file = None
 
     def do_EOF(self, arg):
         """EOF command to exit the program\n"""
