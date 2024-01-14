@@ -8,12 +8,11 @@ class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
 
     def do_EOF(self, arg):
-        """EOF command to exit the program\n"""
+        """EOF command to exit the program with ctrl+d\n"""
         return True
 
     def do_quit(self, arg):
         """Quit command to exit the program\n"""
-        print("")
         return True
 
 if __name__ == '__main__':
