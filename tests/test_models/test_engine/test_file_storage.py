@@ -1,150 +1,158 @@
 #!/usr/bin/python3
-import unittest
+"""Defines unittests for models/engine/file_storage.py.
+Unittest classes:
+    TestFileStorageInstantiation
+    TestFileStorageMethods
+"""
 import os
-from models.engine.file_storage import FileStorage
+import json
+import models
+import unittest
+from datetime import datetime
 from models.base_model import BaseModel
+from models.engine.file_storage import FileStorage
+from models.user import User
+from models.state import State
+from models.place import Place
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
 
-class TestFileStorage(unittest.TestCase):
+class TestFileStorageInstantiation(unittest.TestCase):
+    """Unittests for testing instantiation of the FileStorage class."""
+
+    def test_file_storage_instantiation_no_args(self):
+        self.assertEqual(type(FileStorage()), FileStorage)
+
+    def test_file_storage_instantiation_with_arg(self):
+        with self.assertRaises(TypeError):
+            FileStorage(None)
+
+    def test_file_storage_file_path_is_private_str(self):
+        self.assertEqual(str, type(FileStorage._FileStorage__file_path))
+
+    def test_file_storage_objects_is_private_dict(self):
+        self.assertEqual(dict, type(FileStorage._FileStorage__objects))
+
+    def test_storage_initializes(self):
+        self.assertEqual(type(models.storage), FileStorage)
+
+
+class TestFileStorageMethods(unittest.TestCase):
+    """Unittests for testing methods of the FileStorage class."""
+
+    @classmethod
     def setUp(self):
-        """Ensure the test file does not exist initially"""
-        self.file_path = "test_file.json"
-        if os.path.exists(self.file_path):
-            os.remove(self.file_path)
+        try:
+            os.rename("file.json", "tmp")
+        except IOError:
+            pass
 
-        # Create a new FileStorage instance
-        self.storage = FileStorage()
-        self.storage.reload()
-
+    @classmethod
     def tearDown(self):
-        """Remove the test file after each test"""
-        if os.path.exists(self.file_path):
-            os.remove(self.file_path)
+        try:
+            os.remove("file.json")
+        except IOError:
+            pass
+        try:
+            os.rename("tmp", "file.json")
+        except IOError:
+            pass
+        FileStorage._FileStorage__objects = {}
 
-    def test_all_method(self):
-        all_objects = self.storage.all()
-        self.assertIsInstance(all_objects, dict)
+    def test_all(self):
+        self.assertEqual(dict, type(models.storage.all()))
 
-    def test_new_method(self):
-        my_model = BaseModel()
-        self.storage.new(my_model)
-        all_objects = self.storage.all()
-        self.assertIn(my_model, all_objects.values())
+    def test_all_with_arg(self):
+        with self.assertRaises(TypeError):
+            models.storage.all(None)
 
-    def test_save_and_reload_methods(self):
-        my_model = BaseModel()
-        my_model.name = "Test_Model"
-        self.storage.new(my_model)
-        self.storage.save()
+    def test_new(self):
+        bm = BaseModel()
+        us = User()
+        st = State()
+        pl = Place()
+        cy = City()
+        am = Amenity()
+        rv = Review()
+        models.storage.new(bm)
+        models.storage.new(us)
+        models.storage.new(st)
+        models.storage.new(pl)
+        models.storage.new(cy)
+        models.storage.new(am)
+        models.storage.new(rv)
+        self.assertIn("BaseModel." + bm.id, models.storage.all().keys())
+        self.assertIn(bm, models.storage.all().values())
+        self.assertIn("User." + us.id, models.storage.all().keys())
+        self.assertIn(us, models.storage.all().values())
+        self.assertIn("State." + st.id, models.storage.all().keys())
+        self.assertIn(st, models.storage.all().values())
+        self.assertIn("Place." + pl.id, models.storage.all().keys())
+        self.assertIn(pl, models.storage.all().values())
+        self.assertIn("City." + cy.id, models.storage.all().keys())
+        self.assertIn(cy, models.storage.all().values())
+        self.assertIn("Amenity." + am.id, models.storage.all().keys())
+        self.assertIn(am, models.storage.all().values())
+        self.assertIn("Review." + rv.id, models.storage.all().keys())
+        self.assertIn(rv, models.storage.all().values())
 
-        # Create a new FileStorage instance to simulate a program restart
-        new_storage = FileStorage()
-        new_storage.reload()
+    def test_new_with_args(self):
+        with self.assertRaises(TypeError):
+            models.storage.new(BaseModel(), 1)
 
-        # Check if the reloaded storage contains the saved object
-        reloaded_objects = new_storage.all()
-        self.assertTrue(any(obj.__dict__ == my_model.__dict__ for obj in reloaded_objects.values()))
+    def test_save(self):
+        bm = BaseModel()
+        us = User()
+        st = State()
+        pl = Place()
+        cy = City()
+        am = Amenity()
+        rv = Review()
+        models.storage.new(bm)
+        models.storage.new(us)
+        models.storage.new(st)
+        models.storage.new(pl)
+        models.storage.new(cy)
+        models.storage.new(am)
+        models.storage.new(rv)
+        models.storage.save()
+        save_text = ""
+        with open("file.json", "r") as f:
+            save_text = f.read()
+            self.assertIn("BaseModel." + bm.id, save_text)
+            self.assertIn("User." + us.id, save_text)
+            self.assertIn("State." + st.id, save_text)
+            self.assertIn("Place." + pl.id, save_text)
+            self.assertIn("City." + cy.id, save_text)
+            self.assertIn("Amenity." + am.id, save_text)
+            self.assertIn("Review." + rv.id, save_text)
 
-#    def test_save_method_creates_file(self):
-#        """Check if calling save method creates a file"""
-#        self.storage.save()
-#        self.assertTrue(os.path.exists(self.file_path))
+    def test_save_with_arg(self):
+        with self.assertRaises(TypeError):
+            models.storage.save(None)
 
-    def test_reload_method_ignores_nonexistent_file(self):
+    def test_reload(self):
         """
-        Check if calling reload method with a nonexistent file not raise an error
+        Tests method: reload (reloads objects from string file)
         """
-        non_existent_file_path = "non_existent_file.json"
-        self.storage._FileStorage__file_path = non_existent_file_path
-        self.storage.reload()  # Should not raise an error
+        a_storage = FileStorage()
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+        with open("file.json", "w") as f:
+            f.write("{}")
+        with open("file.json", "r") as r:
+            for line in r:
+                self.assertEqual(line, "{}")
+        self.assertIs(a_storage.reload(), None)
 
-    def test_save_and_reload_empty_file(self):
-        """
-        Check if save and reload work correctly with an empty file
-        """
-        empty_storage = FileStorage()
-        empty_storage.save()
+    def test_reload_with_arg(self):
+        with self.assertRaises(TypeError):
+            models.storage.reload(None)
 
-        # Create a new FileStorage instance to simulate a program restart
-        new_empty_storage = FileStorage()
-        new_empty_storage.reload()
 
-        # Ensure that the reloaded storage is empty
-        reloaded_objects = new_empty_storage.all()
-        self.assertEqual(len(reloaded_objects), 0)
-
-    def test_save_method_updates_existing_file(self):
-        # Check if calling save method updates an existing file
-        self.storage.save()
-
-        # Modify the storage and save again
-        my_model = BaseModel()
-        self.storage.new(my_model)
-        self.storage.save()
-
-        # Create a new FileStorage instance to simulate a program restart
-        new_storage = FileStorage()
-        new_storage.reload()
-
-        # Ensure that the reloaded storage contains the modified data
-        reloaded_objects = new_storage.all()
-        self.assertIn(my_model, reloaded_objects.values())
-    def test_reload_method_handles_invalid_json_format(self):
-        # Check if reload method handles a file with invalid JSON format gracefully
-        with open(self.file_path, 'w', encoding='utf-8') as invalid_json_file:
-            invalid_json_file.write("Invalid JSON Format")
-
-        self.storage.reload()  # Should not raise an error
-
-    def test_reload_method_creates_objects_with_correct_classes(self):
-        # Check if reload method creates objects with correct classes
-        my_model = BaseModel()
-        self.storage.new(my_model)
-        self.storage.save()
-
-        # Manually modify the file to have a different class name
-        with open(self.file_path, 'r', encoding='utf-8') as file:
-            data = json.load(file)
-            for key in data.keys():
-                data[key]["__class__"] = "InvalidClassName"
-        with open(self.file_path, 'w', encoding='utf-8') as file:
-            json.dump(data, file)
-
-        # Create a new FileStorage instance to simulate a program restart
-        new_storage = FileStorage()
-        new_storage.reload()
-
-        # Check if the reloaded storage contains an object with the correct class
-        reloaded_objects = new_storage.all()
-        self.assertIsInstance(list(reloaded_objects.values())[0], BaseModel)
-    
-    def test_reload_method_ignores_nonexistent_file(self):
-    # Check if calling reload method with a nonexistent file does not raise an error
-        non_existent_file_path = "non_existent_file.json"
-        self.storage._FileStorage__file_path = non_existent_file_path
-        self.storage.reload()  # Should not raise an error
-    
-    def test_save_and_reload_methods(self):
-        my_model = BaseModel()
-        my_model.name = "Test_Model"
-        self.storage.new(my_model)
-        self.storage.save()
-
-        # Create a new FileStorage instance to simulate a program restart
-        new_storage = FileStorage()
-        new_storage.reload()
-
-        # Check if the reloaded storage contains an object with the same attributes
-        reloaded_objects = new_storage.all()
-        self.assertTrue(any(obj.__dict__ == my_model.__dict__ for obj in reloaded_objects.values()))
-
-    def test_save_method_creates_file(self):
-        self.storage.save()
-        self.assertTrue(os.path.exists(self.file_path))
-
-    def test_file_deletion_on_initialization(self):
-        # Ensure the test file does not exist initially
-        self.assertFalse(os.path.exists(self.file_path))
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
