@@ -23,7 +23,7 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, arg):
-        args = shlex.split(" ")
+        args = arg.split(" ")
         if len(args) < 1:
             print("** class name missing **")
         elif args[0] not in HBNBCommand.__classes:
@@ -34,7 +34,7 @@ class HBNBCommand(cmd.Cmd):
             print(new_obj.id)
 
     def do_show(self, arg):
-        args = shlex.split(" ")
+        args = arg.split(" ")
         length = len(args)
         if length < 1:
             print("** class name missing **")
@@ -50,7 +50,7 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
 
     def do_destroy(self, arg):
-        args = shlex.split(" ")
+        args = arg.split(" ")
         length = len(args)
         if length < 1:
             print("** class name missing **")
@@ -68,7 +68,7 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
 
     def do_all(self, arg):
-        args = shlex.split()
+        args = arg.split()
         length = len(args)
         if length < 1:
             all_lst = list(str(obj) for obj in models.storage.all().values())
@@ -82,7 +82,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
 
     def do_update(self, arg):
-        args = shlex.split(" ")
+        args = arg.split(" ")
         length = len(args)
         dic = models.storage.all()
         if length < 1:
