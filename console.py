@@ -10,11 +10,12 @@ class HBNBCommand(cmd.Cmd):
     file = None
 
     def do_EOF(self, arg):
-        """EOF command to exit the program"""
+        """EOF command to exit the program\n"""
         return True
 
     def do_quit(self, arg):
-        """Quit command to exit the program"""
+        """Quit command to exit the program\n"""
+        print("")
         return True
 
 if __name__ == '__main__':
