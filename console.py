@@ -8,7 +8,7 @@ import shlex
 class HBNBCommand(cmd.Cmd):
     """HBNBCommand class"""
     prompt = "(hbnb) "
-    __classes = ["BaseModel"]
+    __classes = {"BaseModel", "User"}
     def do_EOF(self, arg):
         """EOF command to exit the program with ctrl+d"""
         print("")
