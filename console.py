@@ -11,10 +11,15 @@ from models.review import Review
 import models
 import shlex
 
+
 class HBNBCommand(cmd.Cmd):
     """HBNBCommand class"""
     prompt = "(hbnb) "
-    __classes = ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]
+    __classes = [
+            "BaseModel", "User", "State",
+            "City", "Amenity", "Place", "Review"
+            ]
+
     def do_EOF(self, arg):
         """EOF command to exit the program with ctrl+d"""
         print("")
@@ -76,13 +81,18 @@ class HBNBCommand(cmd.Cmd):
     def do_all(self, arg):
         args = shlex.split(arg)
         length = len(args)
+        dic = models.storage.all()
         if length < 1:
-            all_lst = list(str(obj) for obj in models.storage.all().values())
+            all_lst = []
+            for obj in dic.values():
+                all_lst.append(str(obj))
             print(all_lst)
-            return False
         else:
             if args[0] in HBNBCommand.__classes:
-                all_lst = list(str(obj) for obj in models.storage.all().values() if obj.__class__.__name__ == args[0])
+                all_lst = []
+                for obj in dic.values():
+                    if obj.__class__.__name__ == args[0]:
+                        all_lst.append(str(obj))
                 print(all_lst)
                 return False
             print("** class doesn't exist **")
@@ -91,13 +101,17 @@ class HBNBCommand(cmd.Cmd):
         args = shlex.split(arg)
         length = len(args)
         dic = models.storage.all()
+        mid_obj = []
+        for obj in dic.values():
+            if obj.__class__.__name__ == args[0]:
+                mid_obj.append(obj.id)
         if length < 1:
             print("** class name missing **")
         elif args[0] not in HBNBCommand.__classes:
             print("** class doesn't exist **")
         elif length < 2:
             print("** instance id missing **")
-        elif args[1] not in list(obj.id for obj in models.storage.all().values() if obj.__class__.__name__ == args[0]):
+        elif args[1] not in mid_obj:
             print("** no instance found **")
         elif length < 3:
             print("** attribute name missing **")
@@ -118,6 +132,7 @@ class HBNBCommand(cmd.Cmd):
                         setattr(dic[key], args[2], attr_v)
                         models.storage.save()
                         return False
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()

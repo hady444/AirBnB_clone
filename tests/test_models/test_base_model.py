@@ -17,7 +17,8 @@ class TestBaseModel(unittest.TestCase):
         self.my_model.my_number = 89
 
     def test_str_method(self):
-        expected_output = "[BaseModel] ({}) {}".format(self.my_model.id, self.my_model.__dict__)
+        di = self.my_model.__dict__
+        expected_output = "[BaseModel] ({}) {}".format(self.my_model.id, di)
         self.assertEqual(str(self.my_model), expected_output)
 
     def test_save_method(self):
