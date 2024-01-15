@@ -143,6 +143,32 @@ class TestBaseModel(unittest.TestCase):
             self.assertIn("City." + cy.id, save_text)
             self.assertIn("Amenity." + am.id, save_text)
             self.assertIn("Review." + rv.id, save_text)
+    
+
+    def test_save_method_updates_file_storage(self):
+        # Create an instance of FileStorage
+        storage = FileStorage()
+
+        # Create a BaseModel instance
+        model = BaseModel()
+        model_id = model.id
+
+        # Ensure the model is not initially in __objects
+        self.assertNotIn("BaseModel." + model_id, storage._FileStorage__objects)
+
+        # Call the save method, which should add the model to __objects and persist changes
+        model.save()
+
+        # Reload the FileStorage to get the updated __objects
+        storage.reload()
+
+        # Check that the model is now in __objects
+        self.assertIn("BaseModel." + model_id, storage._FileStorage__objects)
+
+        # Check that the changes are persisted to the file
+        with open(storage._FileStorage__file_path, 'r') as file:
+            content = file.read()
+            self.assertIn("BaseModel." + model_id, content)
 
     def test_save_with_arg(self):
         with self.assertRaises(TypeError):
@@ -167,37 +193,6 @@ class TestBaseModel(unittest.TestCase):
     def test_reload_with_arg(self):
         with self.assertRaises(TypeError):
             models.storage.reload(None)
-
-    def test_reload(self):
-    base_model = BaseModel()
-    user = User()
-    state = State()
-    place = Place()
-    city = City()
-    amenity = Amenity()
-    review = Review()
-
-    models.storage.new(base_model)
-    models.storage.new(user)
-    models.storage.new(state)
-    models.storage.new(place)
-    models.storage.new(city)
-    models.storage.new(amenity)
-    models.storage.new(review)
-
-    models.storage.save()
-    models.storage.reload()
-
-    objects = FileStorage._FileStorage__objects
-
-    self.assertIn("BaseModel." + base_model.id, objects)
-    self.assertIn("User." + user.id, objects)
-    self.assertIn("State." + state.id, objects)
-    self.assertIn("Place." + place.id, objects)
-    self.assertIn("City." + city.id, objects)
-    self.assertIn("Amenity." + amenity.id, objects)
-    self.assertIn("Review." + review.id, objects)
-
 
 if __name__ == '__main__':
     unittest.main()
