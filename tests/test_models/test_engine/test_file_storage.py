@@ -167,5 +167,37 @@ class TestBaseModel(unittest.TestCase):
     def test_reload_with_arg(self):
         with self.assertRaises(TypeError):
             models.storage.reload(None)
+
+    def test_reload(self):
+    base_model = BaseModel()
+    user = User()
+    state = State()
+    place = Place()
+    city = City()
+    amenity = Amenity()
+    review = Review()
+
+    models.storage.new(base_model)
+    models.storage.new(user)
+    models.storage.new(state)
+    models.storage.new(place)
+    models.storage.new(city)
+    models.storage.new(amenity)
+    models.storage.new(review)
+
+    models.storage.save()
+    models.storage.reload()
+
+    objects = FileStorage._FileStorage__objects
+
+    self.assertIn("BaseModel." + base_model.id, objects)
+    self.assertIn("User." + user.id, objects)
+    self.assertIn("State." + state.id, objects)
+    self.assertIn("Place." + place.id, objects)
+    self.assertIn("City." + city.id, objects)
+    self.assertIn("Amenity." + amenity.id, objects)
+    self.assertIn("Review." + review.id, objects)
+
+
 if __name__ == '__main__':
     unittest.main()
