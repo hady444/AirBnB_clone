@@ -100,17 +100,18 @@ class HBNBCommand(cmd.Cmd):
     def do_update(self, arg):
         args = shlex.split(arg)
         length = len(args)
-        dic = models.storage.all()
-        mid_obj = []
-        if args[0]:
-            for obj in dic.values():
-                if obj.__class__.__name__ == args[0]:
-                    mid_obj.append(obj.id)
         if length < 1:
             print("** class name missing **")
+            return False
         elif args[0] not in HBNBCommand.__classes:
             print("** class doesn't exist **")
-        elif length < 2:
+            return False
+        dic = models.storage.all()
+        mid_obj = []
+        for obj in dic.values():
+            if obj.__class__.__name__ == args[0]:
+                mid_obj.append(obj.id)
+        if length < 2:
             print("** instance id missing **")
         elif args[1] not in mid_obj:
             print("** no instance found **")
