@@ -32,10 +32,11 @@ class FileStorage:
             json.dump(serialized_object, my_file)
 
     def reload(self):
+        """Deserialization, convert json to instance if exists"""
         try:
             with open(self.__file_path, 'r', encoding='utf-8') as my_file:
                 loaded_objects = json.load(my_file)
-                self.__objects = {}
+#                self.__objects = {}
                 for key, obj_dict in loaded_objects.items():
                     class_name, obj_id = key.split('.')
                     obj_dict['__class__'] = class_name
