@@ -3,6 +3,7 @@
 from models.user import User
 import unittest
 
+
 class TestUserModule(unittest.TestCase):
     """Test For user """
     def test_email_is_public_str(self):
