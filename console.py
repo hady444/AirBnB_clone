@@ -102,9 +102,10 @@ class HBNBCommand(cmd.Cmd):
         length = len(args)
         dic = models.storage.all()
         mid_obj = []
-        for obj in dic.values():
-            if obj.__class__.__name__ == args[0]:
-                mid_obj.append(obj.id)
+        if args[0]:
+            for obj in dic.values():
+                if obj.__class__.__name__ == args[0]:
+                    mid_obj.append(obj.id)
         if length < 1:
             print("** class name missing **")
         elif args[0] not in HBNBCommand.__classes:
