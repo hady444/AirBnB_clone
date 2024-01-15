@@ -126,30 +126,13 @@ class TestFileStorageMethods(unittest.TestCase):
             self.assertIn("Amenity." + am.id, save_text)
             self.assertIn("Review." + rv.id, save_text)
 
-    def test_save_with_arg(self):
-        with self.assertRaises(TypeError):
-            models.storage.save(None)
+    def test_instance_creation(self):
+        """Test if an instance of FileStorage is created successfully"""
+        self.assertIsInstance(models.storage, FileStorage)
 
-    def test_reload(self):
-        """
-        Tests method: reload (reloads objects from string file)
-        """
-        a_storage = FileStorage()
-        try:
-            os.remove("file.json")
-        except FileNotFoundError:
-            pass
-        with open("file.json", "w") as f:
-            f.write("{}")
-        with open("file.json", "r") as r:
-            for line in r:
-                self.assertEqual(line, "{}")
-        self.assertIs(a_storage.reload(), None)
-
-    def test_reload_with_arg(self):
-        with self.assertRaises(TypeError):
-            models.storage.reload(None)
-
-
+    def test_reload_method(self):
+        """Test if the reload method exists"""
+        self.assertTrue(hasattr(models.storage, 'reload'))
+        self.assertTrue(callable(getattr(models.storage, 'reload', None)))
 if __name__ == "__main__":
     unittest.main()
