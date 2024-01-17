@@ -72,11 +72,11 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
         else:
             storage.reload()
-            obj = storage.all()
-            obj_key = arg[0] + "." + arg[1]
+            obj = models.storage.all()
+            obj_key = args[0] + "." + args[1]
             if obj_key in obj:
                 del obj[obj_key]
-                storage.save()
+                models.storage.save()
             else:
                 print("** no instance found **")
 
