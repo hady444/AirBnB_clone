@@ -60,12 +60,6 @@ class HBNBCommand(cmd.Cmd):
                 print(str(obj[obj_key]))
             else:
                 print("** no instance found **")
-#            models.storage.reload()
-#            for key, obj in models.storage.all().items():
-#                if obj.id == args[1]:
-#                    print(str(obj))
-#                    return False
-#            print("** no instance found **")
 
     def do_destroy(self, arg):
         args = shlex.split(arg)
@@ -77,13 +71,14 @@ class HBNBCommand(cmd.Cmd):
         elif length < 2:
             print("** instance id missing **")
         else:
-            deletion = models.storage.all()
-            for key, obj in deletion.items():
-                if obj.id == args[1]:
-                    del deletion[key]
-                    models.storage.save()
-                    return False
-            print("** no instance found **")
+            storage.reload()
+            obj = storage.all()
+            obj_key = arg[0] + "." + arg[1]
+            if obj_key in obj:
+                del obj[obj_key]
+                storage.save()
+            else:
+                print("** no instance found **")
 
     def do_all(self, arg):
         args = shlex.split(arg)
