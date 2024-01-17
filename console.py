@@ -71,7 +71,7 @@ class HBNBCommand(cmd.Cmd):
         elif length < 2:
             print("** instance id missing **")
         else:
-            storage.reload()
+            models.storage.reload()
             obj = models.storage.all()
             obj_key = args[0] + "." + args[1]
             if obj_key in obj:
